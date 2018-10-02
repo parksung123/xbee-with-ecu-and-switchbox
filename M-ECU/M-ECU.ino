@@ -47,8 +47,7 @@ uint8_t coldRun = 0;
 uint8_t firingRun = 0;
 uint8_t resetNum = 0;
 
-void resetFunc()
-{
+void resetFunc() {
   Serial.println("=============RESET==============");
   testNum = 0;
   checkValve = 0;
@@ -64,17 +63,13 @@ void resetFunc()
   igS = !ZBioSample3.isDigitalOn(switchList[0]); // returns 0
 
   if (startS == 0)
-  {
     Serial.println("STATUS: OFF");
-  }
+  
   if (pumpS == 0)
-  {
     Serial.println("PUMP: OFF");
-  }
+ 
   if (igS == 0)
-  {
     Serial.println("IGNITER: OFF");
-  }
 }
 
 void setup() {
@@ -93,39 +88,32 @@ void setup() {
   Serial.println("PUMP: OFF");
   // sets type for corresponding LEDs
   for (cnt = 1; cnt < 4; cnt++)
-  {
     pinMode(tubeList[cnt], OUTPUT);
-  }
+  
   for (cnt = 0; cnt < 6; cnt++)
-  {
     pinMode(valveList[cnt], OUTPUT);
-  }
+  
   pinMode(resetPin, OUTPUT);
 }
 
-void tubeAll(int ctr)
-{
+void tubeAll(int ctr) {
   digitalWrite(tubeList[ctr], HIGH);
   delay(dur);
   digitalWrite(tubeList[ctr], LOW);
   delay(50);
 }
 
-void tubeIndi(int ctr)
-{
+void tubeIndi(int ctr) {
   digitalWrite(tubeList[cnt], HIGH);
   delay(dur);
   digitalWrite(tubeList[cnt], LOW);
   delay(dur);
 }
 
-void valveDetermine(int ctr)
-{
+void valveDetermine(int ctr) {
 
-  if (purgeB)
-  {
-    switch (ctr)
-    {
+  if (purgeB) {
+    switch (ctr) {
       case 0 :
         Serial.println("OFF");
         break;
@@ -152,10 +140,8 @@ void valveDetermine(int ctr)
 void loop() {
   xbee.readPacket();
 
-  if (xbee.getResponse().isAvailable())
-  {
-    if (xbee.getResponse().getApiId() == ZB_IO_SAMPLE_RESPONSE)
-    {
+  if (xbee.getResponse().isAvailable()) {
+    if (xbee.getResponse().getApiId() == ZB_IO_SAMPLE_RESPONSE) {
       xbee.getResponse().getZBRxIoSampleResponse(ZBioSample1);
       xbee.getResponse().getZBRxIoSampleResponse(ZBioSample2);
       xbee.getResponse().getZBRxIoSampleResponse(ZBioSample3);
@@ -166,15 +152,13 @@ void loop() {
       igB = !ZBioSample3.isDigitalOn(switchList[0]);
       resetB = !ZBioSample4.isDigitalOn(switchList[2]);
 
-      if (resetB != resetS & resetB == 1)
-      { // check if the igniter button state has changed and pressed
-        if (resetMode == 1)
-        {
+      if (resetB != resetS & resetB == 1) { 
+        // check if the igniter button state has changed and pressed
+        if (resetMode == 1) {
           resetMode = 0;
           Serial.println("Reset: OFF");
         }
-        else if (resetMode == 0)
-        {
+        else if (resetMode == 0) {
           resetMode = 1;
           Serial.println("Reset: ON");
           resetFunc();
@@ -182,48 +166,42 @@ void loop() {
       }
       resetS = resetB;  
 
-      if (startB != startS && startB == 1)
-      { // check if the igniter button state has changed and if it's pressed
+      if (startB != startS && startB == 1) { 
+        // check if the igniter button state has changed and if it's pressed
         Serial.print("STATUS: ");
-        if (startMode == 1)
-        {
+        if (startMode == 1) {
           startMode = 0;
           Serial.println("OFF");
         }
-        else if (startMode == 0)
-        {
+        else if (startMode == 0) {
           startMode = 1;
           Serial.println("ON");
         }
       }
       startS = startB;
 
-      if (igB != igS && igB == 1)
-      { // check if the igniter button state has changed and if it's pressed
+      if (igB != igS && igB == 1) { 
+        // check if the igniter button state has changed and if it's pressed
         Serial.print("IGNITER: ");
-        if (igniterMode == 1)
-        {
+        if (igniterMode == 1) {
           igniterMode = 0;
           Serial.println("OFF");
         }
-        else if (igniterMode == 0)
-        {
+        else if (igniterMode == 0) {
           igniterMode = 1;
           Serial.println("ON");
         }
       }
       igS = igB;
 
-      if (pumpB != pumpS && pumpB == 1)
-      { // check if the pump button state has changed and if it's pressed
+      if (pumpB != pumpS && pumpB == 1) { 
+        // check if the pump button state has changed and if it's pressed
         Serial.print("PUMP: ");
-        if (pumpMode == 1)
-        {
+        if (pumpMode == 1) {
           pumpMode = 0;
           Serial.println("OFF");
         }
-        else if (pumpMode == 0)
-        {
+        else if (pumpMode == 0) {
           pumpMode = 1;
           Serial.println("ON");
         }
@@ -231,12 +209,9 @@ void loop() {
       pumpS = pumpB;
     }
 
-    if (resetMode == 0)
-    {
-      if (xbee.getResponse().isAvailable())
-      {
-        if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
-        {
+    if (resetMode == 0) {
+      if (xbee.getResponse().isAvailable()) {
+        if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
           xbee.getResponse().getZBRxResponse(rx);
           tube = rx.getData(0); // tube number
           dur = rx.getData(1); // duration length
@@ -245,35 +220,29 @@ void loop() {
           mode = rx.getData(4); // mode option (8 / 9);
 
           // This is a Valve TEST
-          if (mode == 0)
-          {
+          if (mode == 0) {
             // Pump and Igniter Switches are OFF
-            if (pumpMode == 0 && igniterMode == 0)
-            {
+            if (pumpMode == 0 && igniterMode == 0) {
               // Print this message only once
-              if (testNum != numberOfPrint)
-              {
+              if (testNum != numberOfPrint) {
                 Serial.println("TEST MODE"); // make it only print once by using bool
                 testNum++;
               }
 
               // If any of tube status 1, 2, 3, run this code
-              if (tube == 1 || tube == 2 || tube == 3) // each tube has different valves
-              {
+              if (tube == 1 || tube == 2 || tube == 3) {
+                // each tube has different valves 
                 // If the Start Switch is pressed, run this code
                 // purgeB = !ZBioSample5.isDigitalOn(switchList[3]);
-                if (purgeB == 1)
-                {
+                if (purgeB == 1) {
                   // Print this message only once
-                  if (checkValve != numberOfPrint)
-                  {
+                  if (checkValve != numberOfPrint) {
                     Serial.println("TUBE " + String(tube) + " : CHECKING VALVE"); // make it only print once by using bool
                     checkValve++;
                   }
-                  for (cnt = 0; cnt < 6; cnt++)
-                  {
-                    if (valve == cnt)
-                    {
+                  
+                  for (cnt = 0; cnt < 6; cnt++) {
+                    if (valve == cnt) {
                       // Depending on which valve it is set to, run the corresponding code
                       valveDetermine(cnt);
                       digitalWrite(valveList[cnt], HIGH);
@@ -282,19 +251,14 @@ void loop() {
                 }
               }
               // If we want to test the valve of ALL Tubes
-              else if (tube == 4)
-              {
+              else if (tube == 4) {
                 // When Start Switch is pressed, run this code
-                if (startMode == 1)
-                {
-                  for (cnt = 0; cnt < 6; cnt++)
-                  {
+                if (startMode == 1) {
+                  for (cnt = 0; cnt < 6; cnt++) {
                     // Check which valve the Switch is set to
-                    if (valve == cnt)
-                    {
+                    if (valve == cnt) {
                       // Print this message once
-                      if (checkValve != numberOfPrint)
-                      {
+                      if (checkValve != numberOfPrint) {
                         Serial.println("VALVE " + String(cnt) + " : TESTING"); // STUD for valve selector signals!!
                         checkValve++;
                       }
@@ -305,64 +269,44 @@ void loop() {
             }
           }
           // This is a COLD RUN
-          else if (mode == 1) // 1 = RUN
-          {
+          else if (mode == 1) {
+            // 1 = RUN
             // Igniter Switch is OFF and Pump Switch is ON
-            if (igniterMode == 0 && pumpMode == 1)
-            {
-              if (coldRun != numberOfPrint)
-              {
+            if (igniterMode == 0 && pumpMode == 1) {
+              if (coldRun != numberOfPrint) {
                 Serial.println("VALVE " + String(cnt) + " : TESTING"); // STUD for valve selector signals!!
                 coldRun++;
               }
 
-              if (startMode == 1)
-              {
-                if (tube > 0 && tube < 4)
-                {
-                  for (cnt = 1; cnt < 4; cnt++)
-                  {
+              if (startMode == 1) {
+                if (tube > 0 && tube < 4) {
+                  for (cnt = 1; cnt < 4; cnt++) {
                     if (tube == cnt)
-                    {
                       tubeIndi(cnt);
-                    }
                   }
                 }
-                else if (tube == 4)
-                {
-                  for (cnt = 1; cnt < 4; cnt++)
-                  {
+                else if (tube == 4) {
+                  for (cnt = 1; cnt < 4; cnt++) 
                     tubeAll(cnt);
-                  }
                 }
               }
             }
-            else if (igniterMode == 1 && pumpMode == 1)
-            {
-              if (firingRun != numberOfPrint)
-              {
+            else if (igniterMode == 1 && pumpMode == 1) {
+              if (firingRun != numberOfPrint) {
                 Serial.println("VALVE " + String(cnt) + " : TESTING"); // STUD for valve selector signals!!
                 firingRun++;
               }
 
-              if (startMode == 1)
-              {
-                if (tube > 0 && tube < 4)
-                {
-                  for (cnt = 1; cnt < 4; cnt++)
-                  {
+              if (startMode == 1) {
+                if (tube > 0 && tube < 4) {
+                  for (cnt = 1; cnt < 4; cnt++) {
                     if (tube == cnt)
-                    {
                       tubeIndi(cnt);
-                    }
                   }
                 }
-                else if (tube == 4)
-                {
+                else if (tube == 4) {
                   for (cnt = 1; cnt < 4; cnt++)
-                  {
                     tubeAll(cnt);
-                  }
                 }
               }
             }
