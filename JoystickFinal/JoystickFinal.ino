@@ -25,8 +25,7 @@ int NextRunningAverage3;
 int checkSwitch;
 int pinSwitch = 4;  
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
   right_servo.attach(11); 
   left_servo.attach(10); 
@@ -44,28 +43,25 @@ void setup()
   sMax = 2100;
 }
 
-void loop()
-{
+void loop() {
   checkSwitch = digitalRead(pinSwitch);
   
-  if(checkSwitch == 0)
-  {
+  if(checkSwitch == 0) {
     // Basic pre-determined movement
-    for(int ver = 150; ver >= 135; ver--)
-    {
+    for(int ver = 150; ver >= 135; ver--) {
       vertical_servo.write(ver); 
       delay(20);
     }
     delay(1000);
-    for(int hor = 95; hor <= 150; hor++)
-    {
+    
+    for(int hor = 95; hor <= 150; hor++) {
       //Serial.println("Horizon: " + String(hor));
       horizon_servo.write(hor);
       delay(20);
     }
     delay(2000);
-    for(int hor = 150; hor >= 40; hor--)
-    {
+    
+    for(int hor = 150; hor >= 40; hor--) {
       //Serial.println("Vertical: " + String(ver));
       horizon_servo.write(hor);
       if (hor <= 125)
@@ -73,16 +69,16 @@ void loop()
       delay(20);
     }
     delay(3000);
-    for(int ver = 40; ver <= 95; ver++)
-    {
+    
+    for(int ver = 40; ver <= 95; ver++) {
       //Serial.println("Horizon: " + String(hor));
       //horizon_servo.write(hor);
       vertical_servo.write(ver);
       delay(20);
     }
     delay(1500);
-    for(int hor = 40; hor <= 95; hor++)
-    {
+    
+    for(int hor = 40; hor <= 95; hor++) {
       horizon_servo.write(hor);
       vertical_servo.write(hor+55);
       delay(20);
@@ -107,42 +103,36 @@ void loop()
   diversRoll = sMax - (roll - sMin);
   sL = diversRoll + deltaEle;
 
-  /** Invert signal for Servos **/
+  // Invert signal for Servos
   sL = sMax - (sL - sMin);
   
+  /* Taking average of the next 10 data from the joystick */
   runningaveragebuffer1[NextRunningAverage1++] = sL;
   runningaveragebuffer2[NextRunningAverage2++] = sR;
   runningaveragebuffer3[NextRunningAverage3++] = z;
   
   if (NextRunningAverage1 >= RunningAverageCount)
-  {
     NextRunningAverage1 = 0;
-  }
+ 
   if (NextRunningAverage2 >= RunningAverageCount)
-  {
     NextRunningAverage2 = 0;
-  }
+  
   if (NextRunningAverage3 >= RunningAverageCount)
-  {
     NextRunningAverage3 = 0;
-  }
   
   float RunningAverageLeft = 0;
   float RunningAverageRight = 0;
   float RunningAverageZ = 0;
   
   for (int i = 0; i < RunningAverageCount; ++i)
-  {
     RunningAverageLeft += runningaveragebuffer1[i];
-  }
+
   for (int i = 0; i < RunningAverageCount; ++i)
-  {
     RunningAverageRight += runningaveragebuffer2[i];
-  }
+ 
   for (int i = 0; i < RunningAverageCount; ++i)
-  {
     RunningAverageZ += runningaveragebuffer3[i];
-  }
+ 
   
   RunningAverageLeft /= RunningAverageCount;
   RunningAverageRight /= RunningAverageCount;
